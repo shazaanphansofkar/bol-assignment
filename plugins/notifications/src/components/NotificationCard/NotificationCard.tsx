@@ -33,7 +33,7 @@ interface NotificationCardProps {
     onClose: () => void
 }
 
-const NotificationCard = ({ notification, onClose }: NotificationCardProps) => {
+export const NotificationCard = ({ notification, onClose }: NotificationCardProps) => {
     const style = typeStyles[notification.type] || typeStyles.info;
 
     const SourceIcon = sourceIcons[notification.source?.toLowerCase()] || Notifications;
@@ -71,5 +71,3 @@ const NotificationCard = ({ notification, onClose }: NotificationCardProps) => {
         </Card>
     );
 };
-
-export default NotificationCard;

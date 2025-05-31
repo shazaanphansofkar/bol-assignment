@@ -1,5 +1,5 @@
 import { Notification } from "../../api/types";
-import NotificationCard, { typeStyles } from "./NotificationCard";
+import { NotificationCard, typeStyles } from "./NotificationCard";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 describe('NotificationCard', () => {

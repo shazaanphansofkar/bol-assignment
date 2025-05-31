@@ -4,20 +4,10 @@ import { useNotification } from '../../providers/NotificationProvider';
 import '@testing-library/jest-dom';
 
 
-// Mock NotificationCard
-jest.mock('../NotificationCard/NotificationCard', () => ({ notification, onClose }: any) => (
-  <div data-testid="notification-card">
-    <span>{notification.title}</span>
-    <button onClick={onClose}>Close</button>
-  </div>
-));
-
-// Mock useNotification context
 jest.mock('../../providers/NotificationProvider', () => ({
   useNotification: jest.fn(),
 }));
 
-// Mock NotificationApi
 const mockFetchUnread = jest.fn();
 const mockMarkAsRead = jest.fn();
 
@@ -41,33 +31,44 @@ describe('NotificationComponent', () => {
   });
 
   it('renders without notifications', async () => {
+    // set state
     (useNotification as jest.Mock).mockReturnValue({ notifications: [] });
     mockFetchUnread.mockResolvedValue([]);
 
+    // action
     render(<NotificationComponent />);
+
+    // expectation
     await waitFor(() => {
       expect(screen.getByText('No new notifications.')).toBeInTheDocument();
     });
   });
 
   it('renders notification cards', async () => {
+    //action
     render(<NotificationComponent />);
+
+    // expectation
     await waitFor(() => {
-      expect(screen.getAllByTestId('notification-card')).toHaveLength(2);
       expect(screen.getByText('New Jira Ticket')).toBeInTheDocument();
       expect(screen.getByText('Pipeline Failed')).toBeInTheDocument();
     });
   });
 
   it('clears notification on close', async () => {
+    //set state
     render(<NotificationComponent />);
+
+
     await waitFor(() => {
       expect(screen.getByText('New Jira Ticket')).toBeInTheDocument();
     });
 
-    const closeButtons = screen.getAllByText('Close');
+    // action
+    const closeButtons = screen.getAllByRole('button');
     fireEvent.click(closeButtons[0]);
 
+    // expectation
     await waitFor(() => {
       expect(mockMarkAsRead).toHaveBeenCalledWith(1);
       // Since NotificationCard is mocked, we verify by testing card count change

@@ -1,9 +1,10 @@
 import { Typography } from "@material-ui/core";
-import { Content, Header, Page } from "@backstage/core-components";
+import { Content } from "@backstage/core-components";
 import { useNotification } from "../../providers/NotificationProvider";
 import { NotificationApi } from "../../api/NotificationApi";
 import { useEffect, useState } from "react";
-import NotificationCard from "../NotificationCard/NotificationCard";
+import { NotificationCard } from "../NotificationCard";
+import { NotiicationHeader } from "../NotiicationHeader";
 
 export const NotificationComponent = () => {
 
@@ -30,18 +31,16 @@ export const NotificationComponent = () => {
 
   return (
     <>
-      <Page themeId="default-light">
-        <Header title="Notifications">
-        </Header>
-        <Content >
-          <div>
-            {messages?.length === 0 && <Typography align="center">No new notifications.</Typography>}
-            {messages?.map(n => (
-              <NotificationCard notification={n} onClose={() => clearNotification(n.id)}></NotificationCard>
-            ))}
-          </div>
-        </Content>
-      </Page>
+      <NotiicationHeader title="Notifications">
+      </NotiicationHeader>
+      <Content >
+        <div>
+          {messages?.length === 0 && <Typography align="center">No new notifications.</Typography>}
+          {messages?.map(n => (
+            <NotificationCard notification={n} onClose={() => clearNotification(n.id)}></NotificationCard>
+          ))}
+        </div>
+      </Content>
     </>
   );
 };
