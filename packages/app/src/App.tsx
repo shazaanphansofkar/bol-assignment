@@ -102,7 +102,11 @@ const routes = (
 );
 
 export default app.createRoot(
-  <NotificationProvider>
+  <NotificationProvider notificationProps={{
+    horizontal: 'right',
+    vertical: 'bottom',
+    closeable: true
+  }}>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>

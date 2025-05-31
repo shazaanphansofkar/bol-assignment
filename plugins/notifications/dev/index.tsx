@@ -6,6 +6,6 @@ createDevApp()
   .addPage({
     element: <NotificationsPage />,
     title: 'Root Page',
-    path: '/notifications',
+    path: '/notifications-fr',
   })
   .render();

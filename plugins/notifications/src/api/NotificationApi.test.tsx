@@ -1,12 +1,14 @@
 import { NotificationApi } from './NotificationApi';
-import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   fetchApiRef: {},
+  discoveryApiRef: {},
   useApi: jest.fn(),
 }));
 
 const mockFetch = jest.fn();
+const mockBaseUrlFn = jest.fn();
 
 (global as any).WebSocket = jest.fn(() => ({
   addEventListener: jest.fn(),
@@ -20,9 +22,13 @@ const mockFetch = jest.fn();
 describe('NotificationApi', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
     (useApi as jest.Mock).mockReturnValue({
       fetch: mockFetch,
+      getBaseUrl: mockBaseUrlFn
     });
+
+    mockBaseUrlFn.mockReturnValue('http://localhost:7007/api/notifications');
   });
 
   it('fetchUnread - should fetch unread notifications', async () => {
@@ -31,10 +37,11 @@ describe('NotificationApi', () => {
       json: async () => mockResponse,
     });
 
-    const api = NotificationApi();
-    const notifications = await api.fetchUnread(123);
 
-    expect(mockFetch).toHaveBeenCalledWith('http://localhost:7007/api/notifications/unread?userId=123');
+    const api = NotificationApi();
+    const notifications = await api.fetchUnread(1);
+
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:7007/api/notifications/unread?userId=1');
     expect(notifications).toEqual(mockResponse);
   });
 
@@ -42,9 +49,9 @@ describe('NotificationApi', () => {
     mockFetch.mockResolvedValue({});
 
     const api = NotificationApi();
-    await api.markAsRead(42);
+    await api.markAsRead(1);
 
-    expect(mockFetch).toHaveBeenCalledWith('http://localhost:7007/api/notifications/42/read', { method: 'PUT' });
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:7007/api/notifications/1/read', { method: 'PUT' });
   });
 
   it('listenForUpdates - should set up WebSocket and call callback on message', () => {
@@ -58,9 +65,9 @@ describe('NotificationApi', () => {
 
     (global as any).WebSocket = jest.fn(() => mockSocket);
 
-    const socket = api.listenForUpdates(321, callback);
+    const socket = api.listenForUpdates(1, callback);
 
-    expect(WebSocket).toHaveBeenCalledWith('ws://localhost:7071/notifications/ws?userId=321');
+    expect(WebSocket).toHaveBeenCalledWith('ws://localhost:7071/notifications/ws?userId=1');
 
     const mockData = [{ id: 99, message: 'New' }];
     if (mockSocket.onmessage) {

@@ -18,12 +18,14 @@ export const notificationsPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
+        discovery: coreServices.discovery
       },
-      async init({ logger, httpRouter }) {
+      async init({ logger, httpRouter, discovery}) {
         await initializeDatabase(); // Sequelize sync
 
         httpRouter.use(await createRouter({
-          logger
+          logger,
+          discovery
         }));
 
         setupWebSocketServer();

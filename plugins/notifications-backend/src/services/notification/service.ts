@@ -1,24 +1,22 @@
-import { Notification } from "./model";
+import { Notification, NotificationModel } from "./model";
 
 export function NotificationService() {
     
-    async function createNotification(title: string, message: string, userId: number) {
+    async function createNotification(notification: NotificationModel) {
         const newNotification = await Notification.create({
-            userId,
-            title,
-            message,
+            ...notification,
             read: false,
-            createdAt: new Date(),
+            createdAt: new Date()
         });
         return newNotification;
     }
 
     async function getUnreadNotifications(userId: number) {
-        return await Notification.findAll({ where: { userId: userId, read: false } });
+        return await Notification.findAll({ where: { userId: userId, read: false }, order:[['createdAt', 'DESC']] });
     }
 
     async function getNotifications() {
-        const notifications = await Notification.findAll();
+        const notifications = await Notification.findAll({order: ['createdAt', 'DESC']});
         return notifications;
     }
 

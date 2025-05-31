@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import {sequelize} from '../../db-config';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 
 export const Notification = sequelize.define(
     'Notification',
@@ -14,6 +14,8 @@ export const Notification = sequelize.define(
         userId: DataTypes.NUMBER,
         title: DataTypes.STRING,
         message:DataTypes.STRING,
+        source: DataTypes.STRING,
+        type: DataTypes.STRING,
         read:{
             type:DataTypes.BOOLEAN,
             defaultValue: false
@@ -26,5 +28,18 @@ export const Notification = sequelize.define(
 );
 
 export interface RouteOptions {
-    logger: LoggerService
+    logger: LoggerService,
+    discovery: DiscoveryService
+
 }
+
+export interface NotificationModel {
+  id: number;
+  userId: number;
+  title: string;
+  message: string;
+  source: 'jira' | 'confluence' | 'gitlab' | 'custom';
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
+  createdAt: string;
+};

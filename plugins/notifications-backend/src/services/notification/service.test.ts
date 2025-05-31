@@ -1,5 +1,5 @@
 import { NotificationService } from './service';
-import { Notification } from './model';
+import { Notification, NotificationModel } from './model';
 
 jest.mock('./model', () => ({
     Notification: {
@@ -23,7 +23,7 @@ describe('NotificationService', () => {
             (Notification.create as jest.Mock).mockResolvedValue(mockNotification);
 
             // action
-            const result = await service.createNotification('Hello', 'World', 1);
+            const result = await service.createNotification(mockNotification as NotificationModel);
 
             // expectation
             expect(Notification.create).toHaveBeenCalledWith(expect.objectContaining({

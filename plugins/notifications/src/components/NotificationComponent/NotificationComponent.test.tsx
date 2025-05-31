@@ -1,101 +1,77 @@
-import { NotificationComponent } from "./NotificationComponent";
-import { useNotification } from "../../providers/NotificationProvider";
-import { Notification } from "../../api/types";
-import { fireEvent, getAllByText, getByText, render, screen } from "@testing-library/react";
-import { NotificationApi } from "../../api/NotificationApi";
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { NotificationComponent } from './NotificationComponent';
+import { useNotification } from '../../providers/NotificationProvider';
+import '@testing-library/jest-dom';
 
-// const markAsReadFn = jest.fn();
 
-jest.mock("../../providers/NotificationProvider", () => ({
-    useNotification: jest.fn()
+// Mock NotificationCard
+jest.mock('../NotificationCard/NotificationCard', () => ({ notification, onClose }: any) => (
+  <div data-testid="notification-card">
+    <span>{notification.title}</span>
+    <button onClick={onClose}>Close</button>
+  </div>
+));
+
+// Mock useNotification context
+jest.mock('../../providers/NotificationProvider', () => ({
+  useNotification: jest.fn(),
 }));
+
+// Mock NotificationApi
+const mockFetchUnread = jest.fn();
+const mockMarkAsRead = jest.fn();
 
 jest.mock('../../api/NotificationApi', () => ({
-  NotificationApi: jest.fn(),
+  NotificationApi: () => ({
+    fetchUnread: mockFetchUnread,
+    markAsRead: mockMarkAsRead,
+  }),
 }));
 
-const notification: Notification = {
-    id: 1,
-    title: 'Test alert',
-    message: 'This is a test notification',
-    read: false,
-    userId: 1,
-    createdAt: "30-05-2025"
-}
+const mockNotifications = [
+  { id: 1, title: 'New Jira Ticket', message: 'A new issue has been assigned', type: 'info', source: 'jira' },
+  { id: 2, title: 'Pipeline Failed', message: 'GitLab pipeline failed', type: 'error', source: 'gitlab' },
+];
 
 describe('NotificationComponent', () => {
-    const markAsRead = jest.fn();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useNotification as jest.Mock).mockReturnValue({ notifications: mockNotifications });
+    mockFetchUnread.mockResolvedValue(mockNotifications);
+  });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+  it('renders without notifications', async () => {
+    (useNotification as jest.Mock).mockReturnValue({ notifications: [] });
+    mockFetchUnread.mockResolvedValue([]);
+
+    render(<NotificationComponent />);
+    await waitFor(() => {
+      expect(screen.getByText('No new notifications.')).toBeInTheDocument();
+    });
+  });
+
+  it('renders notification cards', async () => {
+    render(<NotificationComponent />);
+    await waitFor(() => {
+      expect(screen.getAllByTestId('notification-card')).toHaveLength(2);
+      expect(screen.getByText('New Jira Ticket')).toBeInTheDocument();
+      expect(screen.getByText('Pipeline Failed')).toBeInTheDocument();
+    });
+  });
+
+  it('clears notification on close', async () => {
+    render(<NotificationComponent />);
+    await waitFor(() => {
+      expect(screen.getByText('New Jira Ticket')).toBeInTheDocument();
     });
 
-    it('list notifications', () => {
+    const closeButtons = screen.getAllByText('Close');
+    fireEvent.click(closeButtons[0]);
 
-        const notifcationContext = {
-            notifications: [notification, { ...notification, id: 2 }],
-            setNotifications: jest.fn()
-        };
-
-        // set state
-        jest.mocked(useNotification).mockImplementation(() => notifcationContext);
-
-        // action
-        render(
-            <NotificationComponent></NotificationComponent>
-        );
-
-        // expectation
-        expect(screen.getAllByText(notification.title).length).toEqual(2);
+    await waitFor(() => {
+      expect(mockMarkAsRead).toHaveBeenCalledWith(1);
+      // Since NotificationCard is mocked, we verify by testing card count change
+      expect(screen.queryByText('New Jira Ticket')).not.toBeInTheDocument();
     });
-
-    it('shows empty list', () => {
-
-        const notifcationContext = {
-            notifications: [],
-            setNotifications: jest.fn()
-        };
-
-        // set state
-        jest.mocked(useNotification).mockImplementation(() => notifcationContext);
-
-        // action
-        render(
-            <NotificationComponent></NotificationComponent>
-        );
-
-        // expectation
-        expect(screen.getByText(/No new notifications/i)).toBeInTheDocument();
-
-
-    });
-
-    it('marks notification as read', () => {
-        (NotificationApi as jest.Mock).mockReturnValue({
-                    markAsRead: markAsRead,
-                });
-
-        const setNotificationsFn = jest.fn();
-
-        const notifcationContext = {
-            notifications: [notification],
-            setNotifications: setNotificationsFn
-        };
-
-        // set state
-        jest.mocked(useNotification).mockImplementation(() => notifcationContext);
-
-        // action
-        render(
-            <NotificationComponent></NotificationComponent>
-        );
-
-        // expectation
-        expect(screen.getByText(notification.title)).toBeInTheDocument();
-        const btn = screen.getByRole('button');
-        fireEvent.click(btn);
-
-        // expectation
-        expect(jest.mocked(markAsRead)).toHaveBeenCalledWith(notification.id);
-    });
+  });
 });

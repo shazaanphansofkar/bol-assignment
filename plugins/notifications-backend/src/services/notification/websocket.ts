@@ -19,7 +19,7 @@ export function setupWebSocketServer() {
     ws.on('message', async (data) => {
       const notification: Notification = JSON.parse(data.toString());
       const targetUser: number = notification.userId;
-      await notificationService.createNotification(notification.title, notification.message, notification.userId);
+      await notificationService.createNotification(notification);
 
       wsConnections[targetUser].send(JSON.stringify(await notificationService.getUnreadNotifications(targetUser)));
     });

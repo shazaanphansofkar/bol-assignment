@@ -2701,6 +2701,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.27.1":
+  version: 7.27.4
+  resolution: "@babel/runtime@npm:7.27.4"
+  checksum: 10c0/ca99e964179c31615e1352e058cc9024df7111c829631c90eec84caba6703cc32acc81503771847c306b3c70b815609fe82dde8682936debe295b0b283b2dc6e
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.27.1, @babel/template@npm:^7.27.2, @babel/template@npm:^7.3.3":
   version: 7.27.2
   resolution: "@babel/template@npm:7.27.2"
@@ -7883,6 +7890,22 @@ __metadata:
   version: 5.17.1
   resolution: "@mui/core-downloads-tracker@npm:5.17.1"
   checksum: 10c0/c36641e274a27cdef8a75218021a5ebef0ce588cd0aec004802d56e8d59ac9d8603b8b4840df480de40ce2c3af8898d49929a8564ed5a784ff2b3100dce31366
+  languageName: node
+  linkType: hard
+
+"@mui/icons-material@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "@mui/icons-material@npm:7.1.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.27.1"
+  peerDependencies:
+    "@mui/material": ^7.1.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/d83c5a1506526525fa93053b4ecd4ff498236a415f7594e75252fbec7e4584bb8470db3e04198a4924e8bd67af96cbaf93a9dee0f0ef9fa19a999bd6ade01734
   languageName: node
   linkType: hard
 
@@ -28116,6 +28139,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-icons@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "react-icons@npm:5.5.0"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/a24309bfc993c19cbcbfc928157e53a137851822779977b9588f6dd41ffc4d11ebc98b447f4039b0d309a858f0a42980f6bfb4477fb19f9f2d1bc2e190fcf79c
+  languageName: node
+  linkType: hard
+
 "react-idle-timer@npm:5.7.2":
   version: 5.7.2
   resolution: "react-idle-timer@npm:5.7.2"
@@ -29300,9 +29332,12 @@ __metadata:
   dependencies:
     "@backstage/cli": "npm:^0.32.1"
     "@backstage/e2e-test-utils": "npm:^0.1.1"
+    "@mui/icons-material": "npm:^7.1.0"
     "@playwright/test": "npm:^1.32.3"
     node-gyp: "npm:^10.0.0"
     prettier: "npm:^2.3.2"
+    react-icons: "npm:^5.5.0"
+    sonner: "npm:^2.0.3"
     typescript: "npm:~5.8.0"
   languageName: unknown
   linkType: soft
@@ -30066,6 +30101,16 @@ __metadata:
     atomic-sleep: "npm:^1.0.0"
     flatstr: "npm:^1.0.12"
   checksum: 10c0/68c463a7bce3ec00cb4af4ceb1e77d44fb209d504479b665b65c6b13b272e3e099e3139623e94fa2fdc2b3f6582e7fd37c09aae17e2063f7e3d0da0f4153934b
+  languageName: node
+  linkType: hard
+
+"sonner@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "sonner@npm:2.0.3"
+  peerDependencies:
+    react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+  checksum: 10c0/59f84142f7a692dd1ec90e6df2003a70ff0b325eaef1d5dd17ad250e7f992b71053824f1a7ab3912f8c4caa5ce30523a096b5f5108b3e8ae13f906048691aca1
   languageName: node
   linkType: hard
 

@@ -7,7 +7,7 @@ import {
 import { rootRouteRef } from './routes';
 
 export const notificationsPlugin = createPlugin({
-  id: 'notifications',
+  id: 'notifications-fr',
   routes: {
     root: rootRouteRef,
   },

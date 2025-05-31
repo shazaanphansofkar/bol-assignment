@@ -1,35 +1,44 @@
 import { useState, createContext, ReactNode, useEffect, useContext } from "react";
 import { NotificationApi } from "../../api/NotificationApi";
 import { NotificationToast } from "../../plugin";
+import { Notification } from "../../api/types";
+
+export class NotificationProps {
+    horizontal: string = 'right';
+    vertical: string = 'bottom';
+    closeable: boolean
+}
+
+export interface NotificationContextModel {
+    notifications: Notification[],
+    setNotification: (notifications: Notification[]) => void
+}
 
 export const NotificationContext = createContext({});
 
-export const useNotification = () => {
-  const context = useContext(NotificationContext);
-  if (context === undefined) {
-    throw new Error('useNotification must be used within a Notification provider');
-  }
-  return context;
+export const useNotification = () : NotificationContextModel=> {
+    const context = useContext(NotificationContext) as NotificationContextModel;
+    if (context === undefined) {
+        throw new Error('useNotification must be used within a Notification provider');
+    }
+    return context;
 };
 
-export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+export interface ProviderProps {
+    notificationProps: NotificationProps;
+    children: ReactNode
+}
+
+export const NotificationProvider = ({ notificationProps, children }: ProviderProps) => {
     const [notifications, setNotifications] = useState([]);
-    const [visilibity, setVisibility] = useState(false);
 
     const notificationApi = NotificationApi();
 
-
     useEffect(() => {
-        const load = async () => {
-            const unread = await notificationApi.fetchUnread(1);
-            setNotifications(unread);
-        };
-        load();
 
         const ws = notificationApi.listenForUpdates(1, (notifications) => {
             console.log(notifications);
             setNotifications(notifications);
-            setVisibility(true);
         });
 
         return () => ws.close();
@@ -40,7 +49,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             notifications,
             setNotifications
         }}>
-            <NotificationToast isVisible={visilibity} setVisibility={setVisibility} />
+            <NotificationToast props={notificationProps} />
             {children}
         </NotificationContext.Provider>
     );

@@ -1,43 +1,47 @@
-import { Box, Button, Card, CardContent, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { Content, Header, Page } from "@backstage/core-components";
 import { useNotification } from "../../providers/NotificationProvider";
 import { NotificationApi } from "../../api/NotificationApi";
+import { useEffect, useState } from "react";
+import NotificationCard from "../NotificationCard/NotificationCard";
 
 export const NotificationComponent = () => {
 
-  const { notifications, setNotifications } = useNotification();
+  const { notifications } = useNotification();
+  const [messages, setMessages] = useState([]);
   const notificationApi = NotificationApi();
+
+  useEffect(() => {
+    const load = async () => {
+      const unread = await notificationApi.fetchUnread(1); //TODO: The userId can be fetched by identityApi
+      setMessages(unread);
+    };
+    load();
+  }, []);
+
+  useEffect(() => {
+    setMessages(notifications);
+  }, [notifications]);
 
   const clearNotification = async (id: number) => {
     await notificationApi.markAsRead(id);
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setMessages(prev => prev.filter(n => n.id !== id));
   };
 
   return (
     <>
-      <Content >
-        <div>
-          {notifications.length === 0 && <Typography align="center">No new notifications.</Typography>}
-          {notifications.map(n => (
-            <Card key={n.id} style={{ marginBottom: '1rem' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div>
-                    <Typography variant="h6">{n.title}</Typography>
-                    <Typography variant="body2">{n.message}</Typography>
-                  </div>
-                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <Typography variant="caption">{new Date(n.createdAt).toLocaleString()}</Typography>
-                    <Button variant="contained" onClick={() => clearNotification(n.id)} style={{ marginTop: '0.5rem' }}>
-                      Mark as read
-                    </Button>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </Content>
+      <Page themeId="default-light">
+        <Header title="Notifications">
+        </Header>
+        <Content >
+          <div>
+            {messages?.length === 0 && <Typography align="center">No new notifications.</Typography>}
+            {messages?.map(n => (
+              <NotificationCard notification={n} onClose={() => clearNotification(n.id)}></NotificationCard>
+            ))}
+          </div>
+        </Content>
+      </Page>
     </>
   );
 };

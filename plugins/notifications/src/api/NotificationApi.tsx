@@ -1,17 +1,19 @@
-import { fetchApiRef, useApi } from "@backstage/core-plugin-api";
+import { discoveryApiRef, fetchApiRef, useApi } from "@backstage/core-plugin-api";
 
 export const NotificationApi = () => {
-
-    const _baseUrl = '/api/notifications';
-    const _fetchApi = useApi(fetchApiRef);
+    
+    const discoveryApi = useApi(discoveryApiRef);
+    const fetchApi = useApi(fetchApiRef);
 
     const fetchUnread = async (userId: number): Promise<Notification[]> => {
-        const res = await _fetchApi.fetch(`${_baseUrl}/unread?userId=${userId}`);
-        return res.json();
+        const baseUrl = await discoveryApi.getBaseUrl('notifications'); 
+        const res = await fetchApi.fetch(`${baseUrl}/unread?userId=${userId}`);
+        return await res.json();
     };
 
     const markAsRead = async (id: number): Promise<void> => {
-        await _fetchApi.fetch(`${_baseUrl}/${id}/read`, { method: 'PUT' });
+        const baseUrl = await discoveryApi.getBaseUrl('notifications'); 
+        await fetchApi.fetch(`${baseUrl}/${id}/read`, { method: 'PUT' });
     };
 
     const listenForUpdates = (userId: number, callback: (notifications: Notification[]) => void) => {
